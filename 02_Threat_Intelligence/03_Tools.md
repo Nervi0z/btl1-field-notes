@@ -1,64 +1,81 @@
-# 🛠️ Key Tools for Threat Intelligence (CTI)
+# Tools — Threat Intelligence
 
-Threat Intelligence relies heavily on tools that allow collecting, aggregating, and analyzing data about `IoCs` (Indicators of Compromise) and `TTPs` (Tactics, Techniques, and Procedures). Here we list some essential tools, many of them publicly accessible:
-
-## 📊 IoC Reputation and Context Platforms
-
-> These platforms are the starting point for investigating IPs, domains, hashes, or URLs.
-
-* **[VirusTotal (VT)](https://www.virustotal.com/)**:
-    * **CTI Use:** Indispensable. Not only tells you if something is "malicious" but also provides **crucial context**:
-        * **`Relations Tab`:** Shows IPs a domain resolves to, domains resolving to an IP, files downloaded from a URL, etc. Key for pivoting and finding related infrastructure.
-        * **`Behavior Tab`:** If it's a file, shows sandbox analysis (if executed) with behavior and `TTPs` mapped to MITRE ATT&CK.
-        * **`Community Tab`:** Comments and analyses from other researchers.
-        * **`Passive DNS`:** History of DNS resolutions (see DNS section below).
-        * **`VT Graph` (Advanced):** Allows visualizing complex relationships between indicators.
-
-* **[AbuseIPDB](https://www.abuseipdb.com/)**:
-    * **CTI Use:** Specific for **IP reputation**. Shows if an IP has been reported for malicious activities, by whom, when, and in which category (e.g., `SSH`, `Scanning`, `Phishing`). Comments can provide additional context.
-
-* **[URLhaus (abuse.ch)](https://urlhaus.abuse.ch/)**:
-    * **CTI Use:** Database of **URLs associated with malware distribution**. Allows searching URLs and obtaining information about related malware (if known), status (online/offline), and associated tags.
-
-* **[OTX (AlienVault Open Threat Exchange)](https://otx.alienvault.com/)**:
-    * **CTI Use:** Collaborative platform. Search any `IoC` (IP, domain, hash, URL, CVE) and find related "Pulses" (reports/collections of `IoCs`) created by the community. Often includes associated **`TTPs` (MITRE ATT&CK)**, related malware, and other linked `IoCs`.
-
-* **[URLScan.io](https://urlscan.io/)**:
-    * **CTI Use:** Safely analyzes URLs. For CTI, it's useful because it reveals:
-        * **Infrastructure:** Final IP, domains contacted by the page, TLS certificates.
-        * **Technologies:** Frameworks, JS libraries used (can indicate phishing kits).
-        * **`IoCs`:** IPs, domains, hashes of downloaded files.
-        * **Screenshot:** Allows viewing the content without risk.
-
-## 🌐 Domain and IP Analysis Tools
-
-> Allow obtaining information about registration and network infrastructure.
-
-* **WHOIS Lookups:**
-    * **CTI Use:** Obtain information about a domain's **registration** (registrant, creation/expiration dates, nameservers). Useful for identifying recently or suspiciously registered domains.
-    * **Tools:** Multiple websites (`whois.domaintools.com`, `who.is`, etc.) or the `whois` command on Linux.
-    * **Note:** Privacy (WHOIS privacy/proxy) often hides the actual registrant data.
-
-* **DNS and Passive DNS Lookups:**
-    * **CTI Use:** Investigate a domain's DNS records (`A`, `MX`, `NS`, `TXT`). **Passive DNS (PDNS)** is crucial: it allows viewing the **history** of which IPs a domain has resolved to in the past, or which domains have resolved to an IP. Key for discovering related infrastructure that is no longer active or used intermittently.
-    * **Tools:**
-        * `nslookup` command (Windows/Linux) or `dig` (Linux) for direct DNS queries.
-        * Online services (e.g., Google Public DNS, Cloudflare DNS).
-        * PDNS Databases: **VirusTotal** (`Relations` tab), RiskIQ (requires account), CIRCL Luxembourg PDNS, etc.
-
-* **Device Search Engines (Shodan, Censys, Zoomeye):**
-    * **[Shodan](https://www.shodan.io/)**, **[Censys](https://search.censys.io/)**, **[ZoomEye](https://www.zoomeye.org/)**:
-    * **CTI Use:** Search for internet-connected devices by IP, port, service, banner, etc. Useful for obtaining information about a **suspicious IP address**: What ports are open? What services are running? Are there banners revealing specific software (potentially vulnerable)? Is it associated with any known service (VPN, Tor exit node)?
-    * **Note:** Require careful interpretation. The free version is usually limited.
-
-## 📈 Intelligence Sharing Platforms (Threat Sharing)
-
-* **[MISP (Malware Information Sharing Platform & Threat Sharing)](https://www.misp-project.org/)**:
-    * **CTI Use:** It's an **open-source standard and software** to store, share, correlate, and collaborate on threat intelligence (events, `IoCs`, `TTPs`). It's widely used in professional teams (CERTs, ISACs, companies).
-    * **BTL1 Relevance:** You likely won't use MISP directly in the exam, but it's important to know the **concept** of structured platforms for sharing CTI.
-
-## 📰 OSINT Sources (Open Source Intelligence)
-
-* **Security Blogs, News, Twitter:** (Mentioned in Phishing Resources) Are vital for obtaining information about **emerging threats**, new campaigns, observed `TTPs`, and malware analyses that can provide fresh `IoCs` and context. Follow relevant researchers and security companies.
+Grouped by investigation task. For most IOC investigations, you'll move through these in sequence: reputation first, then infrastructure, then passive history, then behavior.
 
 ---
+
+## Reputation and context platforms
+
+Start here for any IP, domain, URL, or file hash.
+
+| Tool | Best for |
+| :--- | :--- |
+| [VirusTotal](https://www.virustotal.com/) | Cross-engine reputation, passive DNS history, file behavior, indicator relationships. The Relations tab is where pivoting starts. |
+| [AbuseIPDB](https://www.abuseipdb.com/) | IP-specific reputation — abuse categories, report count, comments from reporters. |
+| [URLhaus](https://urlhaus.abuse.ch/) | URLs associated with malware distribution — includes malware family tags and hosting status. |
+| [OTX AlienVault](https://otx.alienvault.com/) | Community threat intel — search any IOC and find related pulses with TTPs, associated malware, and linked indicators. |
+| [URLScan.io](https://urlscan.io/) | Safe URL analysis — screenshot, contacted IPs and domains, downloaded file hashes, technology fingerprint. Good for finding related infrastructure. |
+
+---
+
+## Domain and IP registration
+
+| Tool | Use |
+| :--- | :--- |
+| `whois <domain>` (Linux) | Registration dates, registrar, nameservers, registrant (often hidden by privacy) |
+| [who.is](https://who.is/) | Web-based WHOIS with clean output |
+| [domaintools.com](https://whois.domaintools.com/) | Historical WHOIS data — useful when current record is privacy-protected |
+
+**What to look for in WHOIS:**
+- Creation date — very recent? (days or weeks before the incident)
+- Registrar — known bulletproof hosting registrar?
+- Nameservers — shared with other suspicious domains?
+- Registrant email — anonymous? shared across multiple registrations?
+
+---
+
+## DNS and passive DNS
+
+Current DNS tells you where a domain resolves now. Passive DNS tells you where it has resolved historically — critical for finding infrastructure that's been rotated or taken down.
+```bash
+# current A record
+nslookup suspicious-domain.com
+
+# current A record + all record types
+dig suspicious-domain.com ANY
+
+# MX records (useful for phishing domain investigation)
+dig suspicious-domain.com MX
+
+# reverse lookup — what domain is this IP associated with?
+dig -x 192.168.1.1
+```
+
+**Passive DNS sources:**
+- VirusTotal Relations tab → "Resolutions" section
+- [CIRCL PDNS](https://www.circl.lu/services/passive-dns/) — free passive DNS lookup
+- RiskIQ / Microsoft Defender TI — requires account but has deep PDNS history
+
+---
+
+## Device and service search engines
+
+Useful when you have a suspicious IP and want to understand what's running on it.
+
+| Tool | Use |
+| :--- | :--- |
+| [Shodan](https://www.shodan.io/) | Open ports, banners, running services, geolocation, ASN |
+| [Censys](https://search.censys.io/) | Similar to Shodan — TLS certificates are particularly useful for pivoting |
+| [ZoomEye](https://www.zoomeye.org/) | Broader internet scan data, alternative to Shodan |
+
+**Certificate pivoting:** If a domain uses a TLS certificate with an unusual common name or organization field, search that value in Censys — you may find other IPs or domains using the same certificate, revealing related infrastructure.
+
+---
+
+## Malware and sample repositories
+
+| Tool | Use |
+| :--- | :--- |
+| [MalwareBazaar](https://bazaar.abuse.ch/) | Hash lookup, sample download (with caution), malware family tags |
+| [Hybrid Analysis](https://www.hybrid-analysis.com/) | Sandbox reports with behavioral IOCs and ATT&CK mapping |
+| [Feodo Tracker](https://feodotracker.abuse.ch/) | C2 infrastructure tracking for specific banking trojans |
