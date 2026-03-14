@@ -62,3 +62,18 @@ Even in a single investigation, you follow this pattern informally:
 
 David Bianco's model shows which indicator types cause the most disruption to an attacker when defenders act on them.
 ```
+        /\
+       /  \         TTPs           ← hardest to change
+      /----\
+     /      \       Tools
+    /--------\
+   /          \     Network artifacts
+  /------------\
+ /              \   Host artifacts
+/----------------\
+/                 \ Domain names
+-------------------
+      IP hashes    ← trivial to change
+```
+
+The practical takeaway: detection rules based on TTPs are more durable than blocklists of IPs or hashes. Both have their place, but intelligence that reaches TTP level is significantly more valuable.
