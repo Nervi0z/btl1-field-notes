@@ -1,54 +1,45 @@
-# 📚 Resources and Practice for Threat Intelligence (CTI)
-
-Threat Intelligence is a vast and constantly evolving field. Staying updated and practicing analysis is fundamental. Here are some resources to continue learning:
-
-## 📚 Frameworks and Knowledge Bases
-
-* **[MITRE ATT&CK®](https://attack.mitre.org/)**:
-    * The fundamental resource. Explore the tactics, techniques, actor groups, software, and mitigations. Read the descriptions and examples.
-
-## 📰 Blogs and Research Reports (Essential)
-
-> Reading analyses of real campaigns conducted by experts is one of the best ways to learn. Follow blogs from leading CTI and security companies:
-
-* **[Mandiant Blog (Google Cloud)](https://cloud.google.com/blog/topics/threat-intelligence)**
-* **[CrowdStrike Blog](https://www.crowdstrike.com/blog/)**
-* **[Recorded Future Blog](https://www.recordedfuture.com/blog)**
-* **[Kaspersky Securelist / GReAT](https://securelist.com/)**
-* **[Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/)**
-* **[Cisco Talos Intelligence Blog](https://blog.talosintelligence.com/)**
-* **[Palo Alto Networks - Unit 42 Blog](https://unit42.paloaltonetworks.com/blog/)**
-* **[SANS Internet Storm Center (ISC)](https://isc.sans.edu/)**: Daily reports and short analyses.
-
-**Security News Sites (often cover CTI reports):**
-
-* **[The Hacker News](https://thehackernews.com/)**
-* **[Bleeping Computer](https://www.bleepingcomputer.com/)**
-* **[Krebs on Security](https://krebsonsecurity.com/)** (More focused on cybercrime and investigations)
-
-## 📊 Data Platforms and Communities
-
-* **[OTX (AlienVault Open Threat Exchange)](https://otx.alienvault.com/)**:
-    * Explore "Pulses" created by the community to see how `IoCs` are grouped and contextualized in real investigations.
-
-* **abuse.ch Resources:**
-    * **[MalwareBazaar](https://bazaar.abuse.ch/)**: Database of malware samples. Useful for obtaining hashes and samples (**with caution!**) often with CTI context (tags, families).
-    * **[Feodo Tracker](https://feodotracker.abuse.ch/)**: Tracks C2 infrastructure of specific banking trojans (Emotet, Dridex, etc.). Useful for obtaining active C2 IPs and domains.
-    * **[URLhaus](https://urlhaus.abuse.ch/)**: (Already mentioned) Database of malware distribution URLs.
-
-* **[MISP Project](https://www.misp-project.org/)**:
-    * Explore the concept and look for public MISP instances or OSINT feeds that share data in MISP format. Helps understand how CTI is formally structured and shared.
-
-* **Twitter / X:**
-    * An invaluable (but noisy) source of near real-time CTI. Follow security researchers, CTI companies, and relevant hashtags like `#ThreatIntel`, `#CTI`, `#DFIR`, `#Malware`, `#OSINT`.
-
-## 🎓 Training and Further Reading
-
-* **[SANS CTI Resources](https://www.sans.org/cyber-security-courses/threat-intelligence/)**: SANS offers high-quality (paid) CTI courses but also publishes many free resources (webcasts, posters, whitepapers) in their Reading Room.
-* **Books:** Look for books on "Cyber Threat Intelligence" or "Intelligence-Driven Incident Response" to delve deeper into methodologies.
-
-## 💻 Practice Platforms (Reiteration)
-
-* **[CyberDefenders](https://cyberdefenders.org/)** and **[Blue Team Labs Online (BTLO)](https://blueteamlabs.online/)**: Many of their challenges require using CTI techniques to pivot between `IoCs`, understand the attack context, and answer questions about the adversary or campaign.
+# Practice Resources — Threat Intelligence
 
 ---
+
+## Platforms with CTI-focused challenges
+
+| Platform | What it offers |
+| :--- | :--- |
+| [CyberDefenders](https://cyberdefenders.org/) | Many challenges require pivoting between IOCs, mapping TTPs, and identifying actors — directly relevant CTI practice |
+| [Blue Team Labs Online](https://blueteamlabs.online/) | Investigations that combine DFIR with CTI enrichment |
+| [LetsDefend](https://letsdefend.io/) | Threat intel module with practical IOC investigation scenarios |
+
+---
+
+## Data platforms worth exploring
+
+| Platform | What to explore |
+| :--- | :--- |
+| [OTX AlienVault](https://otx.alienvault.com/) | Browse existing pulses to see how real analysts group and contextualize IOCs |
+| [MalwareBazaar](https://bazaar.abuse.ch/) | Browse recent malware uploads with tags and family names — builds pattern recognition |
+| [Feodo Tracker](https://feodotracker.abuse.ch/) | Live C2 tracking — useful reference for recognizing C2 infrastructure patterns |
+| [MISP Project](https://www.misp-project.org/) | Understanding structured CTI sharing formats — important conceptually even if not used directly in BTL1 |
+
+---
+
+## Blogs and research worth following
+
+Reading real campaign analyses is one of the fastest ways to build pattern recognition for TTPs and actor behavior.
+
+- [Mandiant Blog](https://www.mandiant.com/resources/blog) — APT research and campaign analysis
+- [CrowdStrike Blog](https://www.crowdstrike.com/blog/) — actor tracking and threat reporting
+- [Cisco Talos](https://blog.talosintelligence.com/) — malware analysis and emerging threats
+- [Unit 42 (Palo Alto)](https://unit42.paloaltonetworks.com/) — detailed threat research
+- [SANS ISC](https://isc.sans.edu/) — daily reports, short-form incident analysis
+- [Bleeping Computer](https://www.bleepingcomputer.com/) — accessible reporting on current campaigns
+
+For real-time intel, security researchers on Twitter/X publish IOCs and analysis before they appear in blogs. Search hashtags: `#ThreatIntel`, `#DFIR`, `#Malware`, `#CTI`.
+
+---
+
+## ATT&CK resources
+
+- [attack.mitre.org](https://attack.mitre.org/) — primary reference, start here
+- [ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) — visual matrix tool
+- ATT&CK for CTI — MITRE publishes mapped actor profiles showing which techniques known groups use. Compare what you observe in an investigation against those profiles.
