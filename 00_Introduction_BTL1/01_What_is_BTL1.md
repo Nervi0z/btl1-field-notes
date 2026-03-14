@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="../assets/img/btl1_banner.svg" alt="btl1-field-notes" width="100%">
+</p>
 # What is BTL1?
 
 The Blue Team Level 1 certification is a fully practical assessment from Security Blue Team. No multiple choice, no theory questions — you get 24 hours in a simulated corporate environment and a blank report template. Your job is to work an active incident from initial triage to documented conclusions.
