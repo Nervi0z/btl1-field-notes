@@ -1,65 +1,76 @@
-# BTL1 Operations Framework
+# btl1-field-notes
 
-Operational playbooks, technical cheat sheets, and threat hunting workflows mapped to the Security Blue Team Level 1 (BTL1) domains. 
+Operational reference for Security Blue Team Level 1 candidates and SOC analysts.
 
-This repository serves as a quick-reference framework for junior security analysts, incident responders, and BTL1 certification candidates handling endpoint telemetry, network traffic analysis, and log correlation.
+Cheat sheets, CLI references, and detection workflows across the five BTL1 domains: phishing analysis, threat intelligence, SIEM, digital forensics, and network traffic analysis. Built for use during active lab sessions — not exam prep, just operational context.
 
-## Core Capabilities
+---
 
-The documentation is built around standard Security Operations Center (SOC) workflows and covers the following toolsets:
+## Coverage
 
-* **Endpoint Telemetry & Forensics:** KAPE, Autopsy, The Sleuth Kit (TSK), Sysinternals.
-* **Memory Analysis:** Volatility 2 / 3.
-* **Network Traffic Analysis (NTA):** Wireshark, Tshark, PCAP inspection methodologies.
-* **Log Aggregation & SIEM:** Splunk (SPL optimization), Elastic Stack (ECS standard).
-* **Malware & File Analysis:** Scalpel, Foremost, ExifTool, static analysis sandboxes (Any.Run, Hybrid Analysis).
+| Domain | Focus | Tools |
+| :--- | :--- | :--- |
+| Endpoint forensics | File system artifacts, registry hives, execution traces | KAPE, Autopsy, Sysinternals |
+| Memory analysis | Process injection, rogue connections, hollowing | Volatility 2 & 3 |
+| Network traffic analysis | PCAP inspection, protocol anomalies, payload carving | Wireshark, tshark, BPF |
+| Log correlation / SIEM | Event correlation, SPL, ECS field mapping | Splunk, Elastic Stack |
+| Malware analysis | Static analysis, file carving, metadata extraction | Scalpel, Foremost, ExifTool |
 
-## Repository Architecture
+---
+
+## Structure
 
 ```text
 .
-├── 00_Introduction/         # Exam strategy and critical thinking models
-├── 01_Phishing/             # Email header analysis, MTA logs, attachment extraction
-├── 02_Threat_Intel/         # IoC management, TTP mapping (MITRE ATT&CK)
-├── 03_Forensics/
-│   ├── 02_Disk_Analysis/    # NTFS artifacts, registry hives, file carving
-│   └── 03_Memory_Analysis/  # Volatility profiles, process hollowing detection
-├── 04_SIEM/                 # SPL query structures, log correlation rules
-├── 05_Network/              # Protocol anomalies, BPF filters
-└── 06_Incident_Response/    # IR lifecycle, containment strategies, live response
+├── 00_introduction/        # incident methodology, hypothesis-driven triage
+├── 01_phishing/            # header analysis, MTA logs, attachment extraction
+├── 02_threat_intel/        # IoC management, MITRE ATT&CK TTP mapping
+├── 03_forensics/
+│   ├── disk/               # NTFS artifacts, registry hives, file carving
+│   └── memory/             # Volatility profiles, injection detection
+├── 04_siem/                # SPL query structures, log correlation rules
+├── 05_network/             # BPF filters, protocol anomalies, PCAP carving
+└── 06_incident_response/   # IR lifecycle, containment, live response
 ```
 
-## Usage & Quick Search
+---
 
-This repository is designed to be accessible directly via CLI during lab exercises or live investigations. Clone the repository and use standard GNU tools to query the playbooks:
+## Usage
+
+Clone and query locally during lab work. All playbooks are plain markdown — no dependencies.
 
 ```bash
-# Clone the playbooks
-git clone [https://github.com/yourusername/btl1-ops-framework.git](https://github.com/yourusername/btl1-ops-framework.git)
-cd btl1-ops-framework
+# clone
+git clone https://github.com/youruser/btl1-field-notes
+cd btl1-field-notes
 
-# Quick search for a specific Splunk command or Windows Event ID
-grep -rnw '.' -e 'EventCode=4624'
-grep -rnw '04_SIEM/' -e 'stats count by'
+# search by Windows Event ID
+grep -rnw . -e 'EventCode=4624'
 
-# Find Volatility 3 specific commands
-grep -rnw '03_Forensics/' -e 'vol3'
+# find Volatility 3 module syntax
+grep -rnw 03_forensics/ -e 'windows.malfind'
+
+# locate SPL patterns
+grep -rnw 04_siem/ -e 'stats count by'
 ```
 
-## Maintenance & Contributions
+---
 
-Standard operating procedures (SOPs) evolve. To contribute updates, new SPL queries, or correct syntax errors:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b update/spl-queries`).
-3. Commit changes (`git commit -m "docs: update Splunk cheatsheet with rare execution queries"`).
-4. Open a Pull Request referencing the modified domain.
+## Contributing
 
-See `CONTRIBUTING.md` for strict formatting guidelines.
+Pull requests for updated SPL queries, corrected syntax, or new tool references are welcome.
+Follow the branching convention and check `CONTRIBUTING.md` before opening a PR.
 
-## Compliance & NDA Notice
+```bash
+git checkout -b fix/spl-execution-queries
+git commit -m "siem: update sysmon execution detection rules"
+git push origin fix/spl-execution-queries
+```
 
-This repository contains general technical documentation, standard cybersecurity operating procedures, and open-source tool usage guides. **It strictly adheres to the Security Blue Team Non-Disclosure Agreement (NDA).** No proprietary exam questions, specific lab infrastructure details, or restricted testing materials are included or will be accepted via Pull Requests.
+---
 
-## License
+> General technical documentation and open-source tool references only. No proprietary exam content, lab infrastructure details, or restricted BTL1 materials — per SBT NDA. Pull requests containing such material will not be merged.
 
-MIT License. See `LICENSE` for details.
+---
+
+MIT License · See `LICENSE` for details.
