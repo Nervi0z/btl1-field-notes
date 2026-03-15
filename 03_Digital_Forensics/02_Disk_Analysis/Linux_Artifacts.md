@@ -1,91 +1,241 @@
-# 🐧 Key Forensic Artifacts in Linux
+# Linux Forensic Artifacts
 
-> Linux, due to its open nature and standard file structure, offers many places to look for digital evidence. Knowing the main log directories and files is essential.
-
-## 📜 System Logs (`/var/log`)
-
-> This directory is the central repository for most system and application logs in almost all Linux distributions.
-
-* **Forensic Value:** Records system events, authentication, service activity (web, mail, etc.), kernel errors.
-* **Key Files (May vary slightly between distributions):**
-    * `syslog` or `messages`: General system log, varied events.
-    * `auth.log` (Debian/Ubuntu) or `secure` (CentOS/RHEL): **Very important!** Logs login attempts (successful and failed), `sudo` usage, SSH activity, user/group creation.
-    * `kern.log`: Kernel messages (hardware, drivers).
-    * `dmesg`: Kernel ring buffer messages, useful for boot events.
-    * `boot.log`: Specific messages from the boot process.
-    * `faillog`: Records failed login attempts (binary format).
-    * `lastlog`: Records the last login time for each user (binary format).
-    * Application Logs: Subdirectories like `/var/log/apache2/`, `/var/log/httpd/`, `/var/log/nginx/`, `/var/log/mysql/`, etc., contain logs specific to those services.
-    * `wtmp`: Records user login/logout history (binary format, read by `last`).
-    * `btmp`: Records failed login attempts (binary format, read by `lastb`).
-    * `apt/` (Debian/Ubuntu) or `yum.log` (CentOS/RHEL): Package installation/update history.
-* **Analysis Tools:** `cat`, `less`, `more`, `tail`, `head`, `grep`, `awk`, `sed` for text viewing and filtering. `journalctl` for systems using `systemd`. `last`, `lastb`, `who`, `utmpdump` for binary login logs.
-
-## ⌨️ Command History (`Bash History`)
-
-> Records commands executed by users in the `bash` terminal (the most common).
-
-* **Forensic Value:** Allows reconstructing actions performed by a user (or attacker) on the command line. **Extremely valuable!**
-* **Typical Location:** Hidden file `.bash_history` in each user's home directory (`/home/<user>/.bash_history` or `/root/.bash_history`).
-* **Considerations:**
-    * The user can delete or manipulate this file.
-    * By default, it may not include timestamps (configured with `HISTTIMEFORMAT`).
-    * Other shells (`zsh`, `fish`) use different files (`.zsh_history`, `.local/share/fish/fish_history`).
-* **Tools:** `cat`, `less`, `grep`, `strings` (if the file is corrupt).
-
-## 👤 User Accounts and Groups
-
-> Information about who can access the system and with what permissions.
-
-* **Forensic Value:** Identify legitimate users, users created by attackers, memberships in privileged groups (e.g., `sudo`, `wheel`, `adm`, `docker`).
-* **Key Files:**
-    * `/etc/passwd`: Basic user information (name, UID, GID, home, shell). Readable by all.
-    * `/etc/shadow`: Contains password hashes and expiration policies. **Only readable by root.**
-    * `/etc/group`: Defines groups and which users belong to them.
-    * `/etc/sudoers` or files in `/etc/sudoers.d/`: Defines who can use `sudo` and with what privileges.
-* **Tools:** `cat`, `less`, `grep`, `getent passwd <user>`, `getent group <group>`, `id <user>`.
-
-## 🌐 Network Information
-
-> Configuration and status of network interfaces and connections.
-
-* **Forensic Value:** Understand the system's network configuration, identify active connections (potential C2), listening ports.
-* **Key Commands/Locations:**
-    * Interface Configuration: `ip addr` command (or legacy `ifconfig`). Static configuration files vary (e.g., `/etc/network/interfaces`, `/etc/sysconfig/network-scripts/`).
-    * Active Connections: `ss -tulnp` command (or legacy `netstat -tulnp`). Shows TCP/UDP, listening/connected, IPs/ports, and the associated process (with `-p`).
-    * DNS Configuration: `/etc/resolv.conf`.
-    * ARP Cache: `ip neigh` (or legacy `arp -a`).
-
-## ⏰ Scheduled Tasks (`Cron`)
-
-> Allows running commands or scripts automatically at defined times. Used legitimately, but also as a common persistence technique for malware.
-
-* **Forensic Value:** Identify suspicious scripts or commands that run periodically.
-* **Locations:**
-    * System-wide: `/etc/crontab`, files within `/etc/cron.d/`, `/etc/cron.hourly/`, `/etc/cron.daily/`, `/etc/cron.weekly/`, `/etc/cron.monthly/`.
-    * User-specific: Managed with `crontab -e`. Files are usually in `/var/spool/cron/crontabs/<user>` (requires root to view others').
-* **Tools:** `cat`, `ls` to view directories/files. `crontab -l -u <user>` to list a specific user's tasks.
-
-## ⚙️ Process Information (Mainly Live/Memory)
-
-> Although best obtained from a live system or memory dump, some traces might remain in logs.
-
-* **Forensic Value:** Identify malicious running processes.
-* **Commands (Live):** `ps aux`, `ps -elf`, `top`, `htop`.
-* **`/proc` File System:** Virtual. Contains a directory for each running process PID (`/proc/<PID>/`) with detailed info (`cmdline` - command, `environ` - environment variables, `maps` - mapped memory, `fd` - open files).
-
-## 🏠 User Home Directories (`/home/<user>` or `/root`)
-
-> Contain the user's personal files and many application configurations.
-
-* **Forensic Value:** Files downloaded by the user (potential malware), application configurations (browsers, email clients), SSH keys (`.ssh/`), personal scripts, command history.
-* **Tools:** `ls -la`, `find`, `grep`.
-
-## 🗑️ Temporary Files (`/tmp`, `/var/tmp`)
-
-> Directories designed to store temporary files. Often have lax permissions and are used by malware.
-
-* **Forensic Value:** Downloaded malware, intermediate scripts, extracted files.
-* **Tools:** `ls -la`, `find`.
+Linux forensics relies heavily on understanding the standard filesystem hierarchy and log locations. The artifacts are less centralized than Windows — evidence is scattered across log files, hidden directories, and the /proc virtual filesystem — but the patterns are consistent across most distributions.
 
 ---
+
+## /var/log — system logs
+
+| File | What it records |
+| :--- | :--- |
+| `syslog` / `messages` | General system events from the kernel and daemons |
+| `auth.log` (Debian/Ubuntu) / `secure` (RHEL/CentOS) | Authentication events — SSH logins, sudo, su, PAM |
+| `kern.log` | Kernel messages — hardware, drivers, kernel errors |
+| `boot.log` | Events from system boot |
+| `wtmp` | Login/logout history — binary, read with `last` |
+| `btmp` | Failed login attempts — binary, read with `lastb` |
+| `lastlog` | Most recent login per user — binary, read with `lastlog` |
+| `apt/history.log` | Package installs/removals (Debian/Ubuntu) |
+| `yum.log` / `dnf.log` | Package history (RHEL/CentOS/Fedora) |
+| `apache2/access.log` | Apache HTTP access log |
+| `nginx/access.log` | Nginx HTTP access log |
+
+```bash
+# read login history
+last -F          # includes timestamps
+lastb -F         # failed logins
+lastlog          # most recent login per account
+
+# read auth logs
+grep -i 'failed\|invalid\|accepted' /var/log/auth.log
+grep 'sshd' /var/log/auth.log | grep 'Accepted'
+
+# journalctl (systemd-based systems)
+journalctl -u ssh --since "2024-01-01" --until "2024-01-02"
+journalctl -u sshd -n 50 --no-pager
+```
+
+---
+
+## Bash history
+
+```bash
+# current user history
+cat ~/.bash_history
+history
+
+# all users' bash history
+for user in $(cut -d: -f1 /etc/passwd); do
+    home=$(eval echo ~$user)
+    if [ -f "$home/.bash_history" ]; then
+        echo "=== $user ==="
+        cat "$home/.bash_history"
+    fi
+done
+
+# check for timestamps (if HISTTIMEFORMAT was set)
+cat ~/.bash_history | grep -B1 '#[0-9]\{10\}'
+
+# other shell histories
+cat ~/.zsh_history
+cat ~/.local/share/fish/fish_history
+
+# root history
+sudo cat /root/.bash_history
+```
+
+> Bash history can be deleted or manipulated by a user. Its absence is a finding — document it. Check for `history -c` or truncated files.
+
+---
+
+## User accounts
+
+```bash
+# all user accounts — username:password:UID:GID:comment:home:shell
+cat /etc/passwd
+
+# accounts with login shells (not service accounts)
+grep -v '/nologin\|/false' /etc/passwd
+
+# accounts with UID 0 (root-equivalent)
+awk -F: '$3 == 0 {print $1}' /etc/passwd
+
+# recently modified passwd file (sign of new account creation)
+ls -la /etc/passwd
+
+# group memberships
+cat /etc/group
+id <username>
+
+# sudo privileges
+cat /etc/sudoers
+ls /etc/sudoers.d/
+```
+
+---
+
+## Scheduled tasks (cron)
+
+```bash
+# system-wide crontab
+cat /etc/crontab
+
+# cron directories (scripts dropped here run at scheduled intervals)
+ls -la /etc/cron.d/
+ls -la /etc/cron.hourly/
+ls -la /etc/cron.daily/
+ls -la /etc/cron.weekly/
+ls -la /etc/cron.monthly/
+
+# per-user crontabs
+crontab -l -u <username>
+
+# loop through all user crontabs
+for user in $(cut -d: -f1 /etc/passwd); do
+    echo "=== $user ==="; crontab -l -u $user 2>/dev/null; done
+
+# crontab files location (requires root)
+ls -la /var/spool/cron/crontabs/
+```
+
+---
+
+## Network state
+
+```bash
+# all connections with process info
+ss -tulnp
+ss -antp
+
+# established connections
+ss -tp state established
+
+# listening ports
+ss -tlnp
+
+# ARP cache (recently connected hosts)
+ip neigh
+arp -a
+
+# network interfaces and IPs
+ip addr
+ifconfig -a
+
+# routing table
+ip route
+```
+
+---
+
+## Suspicious locations and recent changes
+
+```bash
+# files in /tmp and /var/tmp (common malware staging areas)
+ls -la /tmp/
+ls -la /var/tmp/
+find /tmp /var/tmp -type f -newer /etc/passwd
+
+# recently modified files system-wide (last 24 hours)
+find / -type f -mtime -1 -not -path '/proc/*' -not -path '/sys/*' 2>/dev/null
+
+# recently modified files (last 7 days)
+find / -type f -mtime -7 -not -path '/proc/*' -not -path '/sys/*' 2>/dev/null
+
+# SUID binaries (can run as root regardless of who executes them)
+find / -perm -4000 -type f 2>/dev/null
+
+# SGID binaries
+find / -perm -2000 -type f 2>/dev/null
+
+# world-writable files (unusual outside /tmp)
+find / -perm -o+w -type f -not -path '/proc/*' 2>/dev/null
+
+# executables in /tmp or /dev/shm (common malware drop locations)
+find /tmp /dev/shm -executable -type f 2>/dev/null
+```
+
+---
+
+## /proc filesystem
+
+Virtual filesystem — exists only in memory, not on disk. Contains per-process information for every running process. Useful on a live system; not available in a disk image (unless specifically captured).
+
+```bash
+# list all running process IDs
+ls /proc/ | grep '^[0-9]'
+
+# command line of a specific process
+cat /proc/<PID>/cmdline | tr '\0' ' '; echo
+
+# environment variables of a process
+cat /proc/<PID>/environ | tr '\0' '\n'
+
+# files open by a process
+ls -la /proc/<PID>/fd/
+
+# memory maps — what libraries a process loaded
+cat /proc/<PID>/maps
+
+# executable path (useful when binary has been deleted)
+ls -la /proc/<PID>/exe
+```
+
+---
+
+## Loaded kernel modules
+
+```bash
+# list all loaded modules
+lsmod
+
+# get details on a specific module
+modinfo <module_name>
+
+# check for unsigned or unusual modules
+lsmod | grep -v '^Module'
+
+# kernel module files on disk
+find /lib/modules/ -name '*.ko' -newer /etc/passwd 2>/dev/null
+```
+
+---
+
+## Systemd services
+
+```bash
+# all active services
+systemctl list-units --type=service --state=active
+
+# all failed services
+systemctl list-units --type=service --state=failed
+
+# all service unit files (including disabled)
+systemctl list-unit-files --type=service
+
+# examine a specific service
+systemctl status <service_name>
+cat /etc/systemd/system/<service_name>.service
+
+# services enabled at boot
+systemctl list-unit-files --type=service --state=enabled
+```

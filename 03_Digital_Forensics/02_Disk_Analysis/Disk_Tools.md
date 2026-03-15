@@ -1,78 +1,161 @@
-# 🛠️ Common Disk Analysis Tools
-
-Numerous tools exist for disk forensic analysis, from complete suites to specialized command-line utilities. Here we describe some of the most relevant and common ones, especially in the context of BTL1.
-
-## 💻 Integrated Forensic Suites (GUI)
-
-These platforms provide a graphical interface and combine multiple analysis functionalities.
-
-* **[Autopsy](https://www.sleuthkit.org/autopsy/)**:
-    > A free and **open-source** digital forensic platform, widely used by both beginners and professionals. It is essentially a graphical interface for **The Sleuth Kit** (see below) and other tools.
-    * **Key Features:**
-        * Processing of disk images (`RAW/dd`, `E01`, etc.).
-        * Detailed analysis of file systems (`NTFS`, `FAT`, `ext`, `HFS+`, etc.).
-        * Automatic extraction of artifacts (web history, registry activity, emails, Exif metadata, etc.) using modules ("Ingest Modules").
-        * Keyword searching (indexed or literal).
-        * File viewer (hex, text, images, etc.).
-        * Creation of timelines (`Timelines`) of file system activity and other artifacts.
-        * Integrated file carving to recover deleted files.
-        * Report generation.
-    * **Basic Use (Conceptual - Mostly GUI):**
-        1. Create a new case (`New Case`).
-        2. Add a data source (`Add Data Source`), selecting the disk image.
-        3. Configure and run the ingest modules (`Ingest Modules`) for automatic analysis.
-        4. Explore the directory tree, extracted artifacts, timeline views, etc.
-    * **CLI Commands (Less Common for General Analysis):** `Autopsy` has some modules that can be used from the command line, but the main analysis is via GUI. Commands like `autopsy -i <image>` or `autopsy -p <project>` are usually for launching the application or specific modules in more advanced or scripting contexts.
-
-* **FTK (Forensic Toolkit - AccessData/Exterro)**:
-    > A very powerful and recognized commercial forensic suite in the industry. Similar in features to `Autopsy` but with additional characteristics and often considered faster in processing large volumes of data.
-    * **Note:** Not to be confused with **`FTK Imager`** (free and focused on acquisition and previewing), although they integrate. Using the full **FTK** is less likely in learning scenarios like BTL1 due to its cost.
-
-## ⌨️ Frameworks and Toolkits (CLI)
-
-> Command-line tools offering great power and flexibility, often used by experienced analysts or for scripting.
-
-* **[The Sleuth Kit (TSK)](https://www.sleuthkit.org/)**:
-    > The **open-source** engine behind `Autopsy`. It's a collection of command-line tools for deep forensic analysis of file systems and disk images. Allows accessing data at a low level.
-    * **Key Tools (Examples):**
-        * `fsstat`: Displays file system details (type, block size, etc.).
-        * `mmls`: Lists the partitions within a disk image.
-        * `fls`: Lists files and directories (similar to `ls`), including deleted ones.
-        * `icat`: Extracts the content of a file based on its inode number (metadata node).
-        * `ffind`: Finds filenames pointing to a specific inode.
-        * `ifind`: Finds the inode pointing to a specific filename.
-        * `tsk_recover`: Attempts to recover deleted files.
-        * `tsk_gettimes`: Extracts MACB timestamps.
-    * **Usage:** Powerful for specific analysis or scripting, requires deeper knowledge of file systems.
-
-* **[Eric Zimmerman's Tools (EZ Tools)](https://ericzimmerman.github.io/)**:
-    > An **essential** suite of **free** and highly efficient tools developed by Eric Zimmerman, focused on parsing specific **Windows** artifacts. They are the de facto standard for many analyses.
-    * **Key Tools (Examples):** `Registry Explorer`/`RECmd` (Registry), `EvtTxECmd` (Event Logs), `PECmd` (Prefetch), `AmcacheParser`, `SrumECmd`, `LECmd` (LNK files), `JLECmd` (Jumplists), `SBECmd` (Shellbags), `MFTECmd` (`$MFT`, `$LogFile`, `$UsnJrnl`), `RBCmd` (Recycle Bin), and many more.
-    * **Usage:** Run from the Windows command line, they are fast and generate output in easy-to-process formats (e.g., CSV).
-
-## 🔧 Specific and Complementary Tools
-
-* **[KAPE (Kroll Artifact Parser and Extractor)](https://www.kroll.com/en/services/cyber-risk/kape)**:
-    > Extremely efficient tool to **collect** (Targets) and/or **process** (Modules) key forensic artifacts from a live system or mounted image.
-    * **Usage:** Ideal for rapid triage or for extracting specific artifacts and then analyzing them with other tools (like Eric Zimmerman's, which can be integrated as Modules in KAPE).
-    * **Basic Commands (Examples):**
-      ```powershell
-      # Example: Extract Registry Hives from C: and process with Registry Explorer
-      kape.exe --tsource C: --tdest C:\KAPE_Output\ --target RegistryHives --module RegistryExplorer
-      ```
-      ```powershell
-      # Example: Collect basic Windows info from a mounted image path
-      kape.exe --tsource \\path\to\mounted_image --tdest C:\KAPE_Output\ --target Windows_Basic_Info 
-      ```
-
-* **Specific Log Parsers:**
-    * **`LogParser` (Microsoft):** Powerful CLI tool allowing SQL-like syntax to query various log file types (text, CSV, EVTX, XML, etc.). Steep learning curve, but very flexible.
-    * Standard command-line tools (`grep`, `awk`, `sed` on Linux/WSL) for filtering text logs.
-
-* **Hex Viewers:**
-    * **Examples:** [HxD](https://mh-nexus.de/en/hxd/) (Windows, free), [010 Editor](https://www.sweetscape.com/010editor/) (Commercial, powerful with binary templates).
-    * **Usage:** Allow viewing and editing the raw content (in hexadecimal and ASCII) of any file or even a disk/image. Useful for manually searching file headers/footers (file carving), analyzing unknown file structures, finding hidden data.
+# Disk Analysis Tools
 
 ---
 
-> _The choice of tool often depends on the specific task, the analyzed operating system, and the analyst's personal preferences. It's common to use a combination of GUI suites and specialized CLI tools._
+## Forensic suites
+
+### Autopsy
+
+Free, open-source, and the most accessible disk forensics platform for BTL1 work. It's a GUI front-end for The Sleuth Kit with additional modules for automated artifact extraction.
+
+What it does well: loading disk images in multiple formats, navigating the filesystem including deleted files, keyword searching, timeline generation, and running ingest modules that automatically extract browser history, registry data, recent files, and metadata.
+
+```
+Basic workflow:
+1. New Case → add Data Source (select disk image)
+2. Configure Ingest Modules — enable what you need: Recent Activity,
+   Hash Lookup, Keyword Search, EXIF Parser
+3. Wait for processing
+4. Explore: Data Artifacts, Web History, Recent Documents, Installed Programs
+5. Use the Timeline view to correlate timestamps across artifact types
+```
+
+### FTK Imager
+
+Free from Exterro (not the same as full FTK, which is commercial). Used primarily for acquisition and image previewing. Can mount images, preview file contents, capture memory, and export files — without modifying the image.
+
+Not a full analysis suite, but useful for quickly browsing an image or exporting specific files for analysis with other tools.
+
+---
+
+## The Sleuth Kit (TSK)
+
+The command-line engine behind Autopsy. Use TSK directly when you need precision, scripting, or when you want to inspect something at a lower level than Autopsy's GUI exposes.
+
+```bash
+# show file system information — type, block size, cluster size
+fsstat -o <partition_offset> disk.dd
+
+# list partitions in a disk image — get offsets for other TSK commands
+mmls disk.dd
+
+# list files and directories (including deleted — shown with *)
+# -r = recursive, -l = long format, -o = partition offset in sectors
+fls -r -l -o 2048 disk.dd
+
+# list only deleted files
+fls -r -d -o 2048 disk.dd
+
+# extract a specific file by inode number (get inode from fls output)
+icat -o 2048 disk.dd 12345 > recovered_file.exe
+
+# find filename for a given inode
+ffind -o 2048 disk.dd 12345
+
+# recover all deleted files from a partition
+tsk_recover -e -o 2048 disk.dd ./recovered_output/
+
+# extract all MACB timestamps from the MFT
+tsk_gettimes -o 2048 disk.dd > timeline.csv
+
+# calculate the offset in bytes (multiply sector offset × 512)
+# e.g., offset 2048 sectors × 512 = 1048576 bytes
+```
+
+> The `-o` offset comes from `mmls` output — it's the starting sector of the partition you want to analyze.
+
+---
+
+## Eric Zimmerman's EZ Tools
+
+Free Windows tools that parse specific artifact types far faster and more thoroughly than anything built into Autopsy. The go-to for Windows artifact analysis.
+
+| Tool | Parses |
+| :--- | :--- |
+| `PECmd.exe` | Prefetch files |
+| `AmcacheParser.exe` | Amcache.hve |
+| `AppCompatCacheParser.exe` | Shimcache from SYSTEM hive |
+| `EvtxECmd.exe` | Windows Event Logs (.evtx) |
+| `MFTECmd.exe` | $MFT, $UsnJrnl, $LogFile |
+| `LECmd.exe` | LNK shortcut files |
+| `JLECmd.exe` | Jumplists |
+| `SBECmd.exe` | Shellbags |
+| `RBCmd.exe` | Recycle Bin $I files |
+| `Registry Explorer` / `RECmd.exe` | Registry hives |
+
+```powershell
+# Prefetch — parse all files in directory, output CSV
+PECmd.exe -d C:\Windows\Prefetch\ --csv C:\output\ --csvf prefetch.csv
+
+# Event logs — parse a single EVTX, output CSV
+EvtxECmd.exe -f Security.evtx --csv C:\output\ --csvf security.csv
+
+# MFT — parse and output CSV
+MFTECmd.exe -f '$MFT' --csv C:\output\ --csvf mft.csv
+
+# Amcache — parse hive
+AmcacheParser.exe -f Amcache.hve --csv C:\output\
+
+# Registry hive — search for a specific key
+RECmd.exe -f NTUSER.DAT --kn "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+
+# LNK files — parse all in a directory
+LECmd.exe -d "C:\Users\user\AppData\Roaming\Microsoft\Windows\Recent\" --csv C:\output\
+```
+
+---
+
+## KAPE (Kroll Artifact Parser and Extractor)
+
+KAPE is a collection framework that automates two things: collecting specific artifacts from a live system or mounted image (Targets), and processing those artifacts with analysis tools (Modules). It's faster than manual collection and keeps everything organized.
+
+```powershell
+# collect registry hives from C: drive
+kape.exe --tsource C: --tdest C:\output\collected\ --target RegistryHives
+
+# collect from a mounted forensic image
+kape.exe --tsource D: --tdest C:\output\collected\ --target !SANS_Triage
+
+# collect and immediately process Prefetch with PECmd
+kape.exe --tsource C: --tdest C:\output\collected\ --target Prefetch `
+         --mdest C:\output\processed\ --module PECmd
+
+# useful target names
+# !SANS_Triage       — broad triage collection (many artifact types)
+# RegistryHives      — all registry hives
+# Prefetch           — prefetch files
+# EventLogs          — Windows event logs
+# $MFT               — Master File Table
+# BrowserHistory     — Chrome, Firefox, Edge artifacts
+```
+
+KAPE targets and modules are community-maintained. Check the [KAPE GitHub](https://github.com/EricZimmerman/KapeFiles) for the full current list.
+
+---
+
+## Hex viewers
+
+Use when you need to look at raw file content — verifying file type by magic bytes, identifying file format structures, finding hidden data, or examining unknown binary formats.
+
+| Tool | Platform | Notes |
+| :--- | :--- | :--- |
+| HxD | Windows | Free. Fast, straightforward. Handles files up to several GB. |
+| 010 Editor | Windows/Mac/Linux | Commercial, more powerful. Binary templates parse known file formats automatically. Worth having for complex formats. |
+| `xxd` | Linux | Command-line hex dump. Good for scripting and piping. |
+| `hexdump` | Linux | Similar to xxd. Built into most distributions. |
+
+```bash
+# hex dump with xxd
+xxd suspicious_file.bin | head -20
+
+# look for magic bytes at the start of a file
+xxd suspicious_file.bin | head -2
+
+# common magic bytes:
+# FF D8 FF           → JPEG
+# 25 50 44 46        → PDF (%PDF)
+# 50 4B 03 04        → ZIP (and docx/xlsx/pptx)
+# 4D 5A              → PE executable (MZ header)
+# 7F 45 4C 46        → ELF (Linux executable)
+# 89 50 4E 47        → PNG
+```
