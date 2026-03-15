@@ -1,48 +1,67 @@
-# Practice Resources — Digital Forensics
+# Contributing to btl1-field-notes
+
+Corrections, updated syntax, and new detection patterns are welcome. This is a living reference — if something is wrong, outdated, or missing, that's worth fixing.
 
 ---
 
-## Disk images and memory dumps for practice
+## What's in scope
 
-| Source | What's available |
-| :--- | :--- |
-| [Digital Corpora](https://digitalcorpora.org/) | Public repository of disk images, memory dumps, and network captures built for forensic education. Broad range of OS types and scenarios. |
-| [CyberDefenders](https://cyberdefenders.org/) | CTF-style DFIR challenges with realistic evidence packages — disk, memory, PCAP, logs. The most directly relevant platform for BTL1-style practice. |
-| [Blue Team Labs Online](https://blueteamlabs.online/) | Investigation scenarios frequently require disk and memory forensics as part of a broader case. BTL1-aligned format. |
-| [Hack The Box — Sherlocks](https://app.hackthebox.com/sherlocks) | DFIR challenges at higher difficulty. Good for pushing beyond BTL1 fundamentals. |
-| [Volatility Memory Samples](https://github.com/volatilityfoundation/volatility/wiki/Memory-Samples) | Public memory images from the Volatility Foundation wiki. Use these to practice specific plugins without needing a full scenario. |
-| [NIST CFReDS](https://cfreds.nist.gov/) | Reference disk image datasets. Some are dated but the forensic questions are still valid for practicing artifact location. |
-| [aboutDFIR Challenges](https://aboutdfir.com/challenges/) | Aggregated list of publicly available DFIR challenges across multiple platforms. |
+- Corrected CLI syntax, commands, or tool flags
+- Updated tool references when projects rename, move, or change syntax
+- New SPL detection patterns, Wireshark filters, or Volatility plugin examples
+- Additional artifact locations for Windows or Linux forensics
+- Fixed or updated external links
+- Improved explanations where something is unclear or inaccurate
 
----
+## What won't be accepted
 
-## Lab platforms
+- Exam questions, answers, or scenario-specific content from any BTL1 instance
+- Lab infrastructure details from the BTL1 environment
+- Tool names used exclusively in the BTL1 exam (NDA compliance)
+- Generic content that could appear in any security study guide unchanged
+- Content with emojis, academic phrasing, or slide-deck-style bullet lists
 
-| Platform | Relevant content |
-| :--- | :--- |
-| [TryHackMe](https://tryhackme.com/) | Volatility rooms, Autopsy walkthroughs, Windows forensics paths. Good starting point before tackling full scenarios. |
-| [Hack The Box — Sherlocks](https://app.hackthebox.com/sherlocks) | Multi-artifact investigations requiring correlation across disk, memory, and logs. |
+The writing standard is practitioner voice — direct, concrete, real commands. If a section reads like a textbook, it doesn't fit.
 
 ---
 
-## Tool documentation
+## How to contribute
 
-These are worth reading once, not just using as a reference:
-
-- **[Autopsy User Documentation](https://docs.sleuthkit.org/autopsy/)** — covers ingest modules, timeline analysis, and keyword search in detail
-- **[The Sleuth Kit Wiki](https://wiki.sleuthkit.org/)** — TSK command reference and filesystem concepts
-- **[Eric Zimmerman's Tools](https://ericzimmerman.github.io/)** — each tool has its own documentation; his blog covers practical usage with real examples
-- **[Volatility 3 GitHub Wiki](https://github.com/volatilityfoundation/volatility3/wiki)** — plugin list, symbol table setup, and contribution docs
-- **[KAPE Documentation](https://www.kroll.com/en/insights/publications/cyber/kape-documentation)** — target and module reference; the GitHub repo has the full current list of targets
-- **[ExifTool Tag Names](https://exiftool.org/TagNames/)** — complete tag reference organized by file format
+1. **Open an issue first** for anything beyond a typo or broken link — describe what's wrong and what you'd change
+2. Fork the repository
+3. Create a branch with a descriptive name:
+   ```
+   fix/volatility-malfind-syntax
+   add/linux-proc-artifacts
+   docs/splunk-lateral-movement-query
+   ```
+4. Make your changes
+5. Commit with a clear message:
+   ```
+   git commit -m "forensics: correct vol3 cmdline plugin syntax for Linux"
+   git commit -m "siem: add failed login spray detection pattern"
+   ```
+6. Open a pull request with a one-line description of what changed and why
 
 ---
 
-## Blogs and ongoing learning
+## Style rules
 
-- **[13Cubed](https://www.13cubed.com/)** — video walkthroughs of Volatility, Plaso, and Windows artifact analysis. One of the best free resources for memory forensics specifically.
-- **[This Week in 4n6](https://thisweekin4n6.com/)** — weekly roundup of DFIR news, new tools, writeups, and challenge releases.
-- **[SANS DFIR Blog](https://www.sans.org/blog/topic/dfir/)** — technical posts and webcasts on current DFIR techniques.
-- **[Didier Stevens Blog](https://blog.didierstevens.com/)** — deep dives on file format analysis, PDF and Office document forensics, malicious document deconstruction.
-- **[aboutDFIR](https://aboutdfir.com/)** — aggregator for tools, challenges, and community resources. Good for staying current.
-- **[Forensafe](https://forensafe.com/)** — Windows artifact analysis walkthroughs with real examples.
+- No emojis anywhere
+- No "this section covers", "it is important to", "comprehensive", "leveraging"
+- Every code block must contain real, working syntax — no placeholder pseudocode
+- Short sentences. Concrete examples. If you're explaining a concept, use a real scenario
+- Tables for structured data, prose for explanations — not bullet lists for everything
+
+---
+
+## NDA compliance
+
+This repository contains general technical documentation and references to publicly available tools only. Do not submit:
+
+- Specific BTL1 exam questions or answers
+- Lab infrastructure details from any BTL1 exam instance
+- Tool names used exclusively in the BTL1 environment
+- Scenario-specific findings from any exam session
+
+Pull requests containing NDA-restricted material will be closed without review.
