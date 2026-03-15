@@ -1,83 +1,205 @@
-# 🛠️ Essential Tool: The Volatility Framework
+# Volatility
 
-> **`Volatility`** is the leading **open-source** framework and de facto standard for volatile memory (RAM) forensics analysis. Written in Python, it allows extracting digital artifacts from memory dumps of a wide variety of operating systems (Windows, Linux, macOS, Android).
-
-It works using a **plugin** system, each designed to extract a specific type of information from the memory dump.
-
-## ⚠️ Volatility 2 vs. Volatility 3: Important!
-
-> Two main versions of Volatility exist, and understanding their differences is crucial, as the syntax and some plugins vary:
-
-* **Volatility 2 (Legacy):**
-    * Based on Python 2 (although Python 3 compatible forks exist).
-    * Relies **heavily** on **Profiles (`Profiles`)**: Specific pre-built definitions for each Operating System version, Service Pack, and architecture (e.g., `Win7SP1x64`, `Win10x64_14393`, `LinuxDebian10x64`).
-    * **Identifying and specifying the correct profile is mandatory** for plugins to work properly. The `imageinfo` command (V2) is used to identify possible profiles.
-    * **Typical Syntax:** `python vol.py --profile=<ProfileName> -f <dump_file> <v2_plugin> [plugin_options]`
-    * Still widely used and has extensive online documentation/tutorials. Might be the version found in some exam/CTF environments.
-
-* **Volatility 3 (Current):**
-    * Based on Python 3.
-    * **Goal:** To be "profile-less". Instead of profiles, it uses **Symbol Tables (`Symbol Tables`)**. Tries to detect the OS automatically and download/find the necessary symbol tables.
-    * **Typical Syntax:** `python vol.py -f <dump_file> <plugin.with.dots> [plugin_options]` (e.g., `windows.pslist.PsList`).
-    * It's the version under active development and the future of the framework.
-
-**Which one to use in BTL1?** **Consult the documentation or environment provided by BTL1.** It's vital to know which version they expect you to use, as it directly affects the commands you will execute. This guide will primarily show Volatility 3 syntax and plugin names but will mention Volatility 2 equivalents when relevant.
-
-## ⚙️ Basic Installation and Setup
-
-* **Requirement:** Python (preferably Python 3 for Volatility 3).
-* **Installation:** Generally via `pip install volatility3` or cloning the repository from GitHub and installing dependencies (`pip install -r requirements.txt`).
-* **Volatility 3 Symbol Packs:** V3 needs symbol tables. It tries to download them automatically, but if it fails, you might need to download them manually ([Volatility 3 Symbol Packs](https://github.com/volatilityfoundation/symbol-packs)) and place them in the `volatility3/symbols/` folder or a location specified in your configuration.
-
-## 🔄 Basic Usage Workflow
-
-1.  **Identify Dump Information:**
-    * **Vol3:** `python3 vol.py -f <dump_file> windows.info.Info` or `linux.info.Info`. Usually detects the OS automatically.
-    * **Vol2:** `python vol.py -f <dump_file> imageinfo`. **Crucial** for obtaining the list of suggested profiles (`Suggested Profile(s)`).
-
-2.  **Execute Plugins:**
-    * **Vol3:** `python3 vol.py -f <dump_file> <plugin.with.dots> [options]`
-    * **Vol2:** `python vol.py --profile=<ChosenProfile> -f <dump_file> <v2_plugin> [options]`
-
-3.  **Analyze Output:** Interpret the information returned by the plugin.
-
-4.  **Filter Results (Optional):** For very long outputs, you can pipe to `grep` (Linux) or `findstr` (Windows) to filter by keywords, or process the output with scripts.
-    * Example: `python3 vol.py -f <dump_file> windows.pslist.PsList | grep suspicious.exe`
-
-## 🔌 Key Plugins (Common V3 / V2 Examples)
-
-> This table lists some of the most useful plugins, many relevant for BTL1. (Notation is V3, with V2 equivalent in parentheses if different).
-
-| Task/Objective           | Volatility 3 Plugin (Example)               | Volatility 2 Plugin (Example) | Notes                                                         |
-| :----------------------- | :------------------------------------------ | :---------------------------- | :------------------------------------------------------------ |
-| **General Info** | `windows.info.Info` / `linux.info.Info`       | `imageinfo`                   | Identifies OS, version, arch. Crucial for V2 (get Profile).   |
-| **Processes** | `windows.pslist.PsList` / `linux.pslist.PsList` | `pslist`                      | Lists active processes (similar `tasklist`/`ps`).             |
-|                          | `windows.pstree.PsTree` / `linux.pstree.PsTree` | `pstree`                      | Shows processes in a tree (parent-child relationships).       |
-|                          | `windows.psscan.PsScan` / `linux.psscan.PsScan` | `psscan`                      | Scans for process structures (finds hidden/terminated).       |
-|                          | `windows.cmdline.CmdLine` / `linux.cmdline.CmdLine` | `cmdline`                     | Shows command-line arguments.                                 |
-|                          | `windows.dlllist.DllList` / `linux.ldrmodules.LdrModules` | `dlllist` / `ldrmodules`      | Lists DLLs/libraries loaded by process.                       |
-|                          | `windows.handles.Handles`                   | `handles`                     | Lists open handles by process (files, reg keys, etc.).        |
-|                          | `windows.memmap.Memmap` / `linux.proc.Maps` | `memmap` / `proc_maps`        | Shows the memory map of a process.                            |
-|                          | `windows.procdump.ProcDump` / `linux.procdump.ProcDump` | `procdump`                    | Dumps the **executable** memory of a process to a file.     |
-| **Networking** | `windows.netscan.NetScan` / `linux.netstat.NetStat` | `netscan` / `netstat`         | Shows connections (TCP/UDP) and listening ports.              |
-|                          | `windows.netstat.NetStat`                   | `connections`/`connscan`      | (V3 Win) Alt to NetScan. (V2) `connscan` finds closed TCP.  |
-| **Registry (Win)** | `windows.registry.hivelist.HiveList`      | `hivelist`                    | Lists registry hives loaded in memory.                        |
-|                          | `windows.registry.printkey.PrintKey`      | `printkey`                    | Shows value(s) of a specific registry key in memory.          |
-|                          | `windows.registry.hivedump.HiveDump`      | `hivedump`                    | Dumps a complete hive from memory to a file.                  |
-| **System** | `windows.modules.Modules` / `linux.lsmod.Lsmod` | `modules` / `lsmod`           | Lists loaded kernel modules/drivers.                          |
-|                          | `windows.modscan.ModScan` / `linux.modscan.ModScan` | `modscan`                     | Scans for module structures (finds hidden).                   |
-|                          | `windows.svcscan.SvcScan`                   | `svcscan`                     | Scans registered services (Windows).                          |
-| **Files in Memory** | `windows.filescan.FileScan` / `linux.filescan.FileScan` | `filescan`                    | Scans for file objects in memory.                             |
-|                          | `windows.dumpfiles.DumpFiles` / `linux.dumpfiles.DumpFiles` | `dumpfiles`                   | Dumps cached/mapped files from memory to disk.                |
-| **Malware/Misc** | `windows.malfind.Malfind` / `linux.malfind.Malfind` | `malfind`                     | Searches for injected/suspicious code in process memory.      |
-|                          | `windows.cmdscan.CmdScan`                   | `cmdscan`/`consoles`          | Searches for commands in consoles (`cmd.exe`).                |
-|                          | `windows.clipboard.Clipboard`               | `clipboard`                   | Extracts clipboard content.                                   |
-|                          | `timeliner.Timeliner`                       | `timeliner`                   | Creates a timeline with events from various plugins.          |
-|                          | `yarascan.YaraScan`                         | `yarascan`/`linux_yarascan`   | Scans memory with YARA rules.                                 |
-|                          | `windows.hashdump.Hashdump`                 | `hashdump`                    | Dumps LM/NTLM hashes from memory (Windows).                   |
-
-*(Note: Exact availability and plugin names may vary slightly between minor versions. Always consult Volatility's own help: `python3 vol.py -h` or `python vol.py -h`)*
+The de facto standard framework for memory forensics. Open-source, Python-based, and plugin-driven — each plugin extracts a specific type of information from a raw memory dump. This file covers Volatility 3, with V2 equivalents noted throughout.
 
 ---
 
-> _Mastering **`Volatility`** is essential for memory analysis. Start with the basic plugins (`pslist`, `netscan`, `cmdline`, `dlllist`) and explore others as needed._
+## V2 vs V3
+
+| | Volatility 2 | Volatility 3 |
+| :--- | :--- | :--- |
+| Python version | Python 2 (Python 3 forks exist) | Python 3 native |
+| OS detection | Requires manual `--profile` specification | Automatic — uses symbol tables |
+| Profile syntax | `--profile=Win10x64_17763` | Not required |
+| Plugin naming | `pslist`, `netscan` | `windows.pslist.PsList`, `windows.netscan.NetScan` |
+| Symbol tables | Not needed | Auto-downloaded or manually placed |
+| Status | Legacy, still widely used | Active development, recommended |
+
+**V2 basic syntax:**
+```bash
+python vol.py --profile=<Profile> -f memory.raw <plugin> [options]
+# Profile examples: Win7SP1x64, Win10x64_17763, LinuxDebian10x64
+python vol.py -f memory.raw imageinfo   # get suggested profiles
+```
+
+**V3 basic syntax:**
+```bash
+python3 vol.py -f memory.raw <namespace.PluginName> [options]
+```
+
+> Check which version the BTL1 environment provides before the exam. Syntax differs enough that running V2 commands against V3 (or vice versa) will fail silently or with confusing errors.
+
+---
+
+## Basic workflow
+
+```bash
+# 1. identify OS, architecture, and build
+python3 vol.py -f memory.raw windows.info.Info
+
+# for Linux dumps
+python3 vol.py -f memory.raw linux.info.Info
+
+# V2 equivalent
+python vol.py -f memory.raw imageinfo
+# note the "Suggested Profile(s)" line — use the first match
+```
+
+If Volatility 3 can't find symbol tables automatically:
+```bash
+# place downloaded symbol packs in:
+volatility3/symbols/windows/   # for Windows symbols
+volatility3/symbols/linux/     # for Linux symbols
+
+# download from: https://github.com/volatilityfoundation/symbol-packs
+```
+
+---
+
+## Full plugin reference
+
+Organized by investigation category. V3 syntax shown; V2 equivalent in the right column.
+
+### Processes
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| List active processes | `windows.pslist.PsList` | `pslist` |
+| Process tree (parent-child) | `windows.pstree.PsTree` | `pstree` |
+| Scan for hidden/terminated | `windows.psscan.PsScan` | `psscan` |
+| Command-line arguments | `windows.cmdline.CmdLine` | `cmdline` |
+| Loaded DLLs | `windows.dlllist.DllList` | `dlllist` |
+| Open handles | `windows.handles.Handles` | `handles` |
+| Environment variables | `windows.envars.Envars` | `envars` |
+| Process memory map | `windows.memmap.Memmap` | `memmap` |
+| Dump process executable | `windows.procdump.ProcDump` | `procdump` |
+| Dump full process memory | `windows.dumpfiles.DumpFiles` | `memdump` |
+
+### Network
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| All connections and sockets | `windows.netscan.NetScan` | `netscan` |
+| Active connections | `windows.netstat.NetStat` | `connections` |
+| Scan for closed TCP connections | — | `connscan` |
+
+### Registry
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| List loaded hives | `windows.registry.hivelist.HiveList` | `hivelist` |
+| Print a registry key's values | `windows.registry.printkey.PrintKey` | `printkey` |
+| Dump a hive to disk | `windows.registry.hivedump.HiveDump` | `hivedump` |
+| Search for a key/value | `windows.registry.userassist.UserAssist` | `userassist` |
+
+### System modules and services
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| Loaded kernel modules | `windows.modules.Modules` | `modules` |
+| Scan for hidden modules | `windows.modscan.ModScan` | `modscan` |
+| Registered services | `windows.svcscan.SvcScan` | `svcscan` |
+| Driver objects | `windows.driverscan.DriverScan` | `driverscan` |
+
+### Files
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| File objects in memory | `windows.filescan.FileScan` | `filescan` |
+| Extract cached files | `windows.dumpfiles.DumpFiles` | `dumpfiles` |
+
+### Malware detection
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| Injected/suspicious memory | `windows.malfind.Malfind` | `malfind` |
+| DLL presence check (injection) | `windows.ldrmodules.LdrModules` | `ldrmodules` |
+| YARA rule scan | `yarascan.YaraScan` | `yarascan` |
+| SSDT hooks | — | `ssdt` |
+
+### User activity
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| cmd.exe command history | `windows.cmdscan.CmdScan` | `cmdscan` |
+| Console output history | `windows.console.ConsoleInfo` | `consoles` |
+| Clipboard content | `windows.clipboard.Clipboard` | `clipboard` |
+| NTLM hash dump | `windows.hashdump.Hashdump` | `hashdump` |
+
+### Linux-specific
+
+| Task | V3 Plugin | V2 Plugin |
+| :--- | :--- | :--- |
+| Process list | `linux.pslist.PsList` | `linux_pslist` |
+| Process tree | `linux.pstree.PsTree` | `linux_pstree` |
+| Network connections | `linux.netstat.NetStat` | `linux_netstat` |
+| Bash history | `linux.bash.Bash` | `linux_bash` |
+| Loaded kernel modules | `linux.lsmod.Lsmod` | `linux_lsmod` |
+| Injected code | `linux.malfind.Malfind` | `linux_malfind` |
+
+---
+
+## Filtering output
+
+```bash
+# filter pslist for specific process names
+python3 vol.py -f memory.raw windows.pslist.PsList | grep -iE 'powershell|cmd|wscript|mshta'
+
+# filter netscan for suspicious ports
+python3 vol.py -f memory.raw windows.netscan.NetScan | grep -E ':4444|:1337|:8080|ESTABLISHED'
+
+# filter netscan for external connections (exclude common local ranges)
+python3 vol.py -f memory.raw windows.netscan.NetScan | grep -v '127\.\|0\.0\.0\.0\|::1'
+
+# save output to file
+python3 vol.py -f memory.raw windows.pslist.PsList > pslist.txt
+
+# filter malfind results to only those with MZ header (actual executables)
+python3 vol.py -f memory.raw windows.malfind.Malfind | grep -A5 'MZ'
+```
+
+---
+
+## Complete investigation sequence — suspicious process
+
+Starting from nothing. Adapt the PID and details to your actual dump.
+
+```bash
+# Step 1 — identify OS and confirm the dump is readable
+python3 vol.py -f memory.raw windows.info.Info
+
+# Step 2 — get process list and look for anomalies
+python3 vol.py -f memory.raw windows.pslist.PsList | tee pslist.txt
+
+# Step 3 — get process tree to see parent-child relationships
+python3 vol.py -f memory.raw windows.pstree.PsTree | tee pstree.txt
+
+# Step 4 — check command-line arguments for all processes
+# look for encoded commands, unusual paths, suspicious arguments
+python3 vol.py -f memory.raw windows.cmdline.CmdLine | tee cmdline.txt
+
+# Step 5 — check network connections
+# look for established outbound connections from unusual processes
+python3 vol.py -f memory.raw windows.netscan.NetScan | tee netscan.txt
+
+# Step 6 — check for injected code in the suspicious process (PID from step 2)
+python3 vol.py -f memory.raw windows.malfind.Malfind --pid <PID> | tee malfind_pid.txt
+
+# Step 7 — dump the process executable for further analysis
+mkdir -p ./process_dumps/
+python3 vol.py -f memory.raw -o ./process_dumps/ windows.procdump.ProcDump --pid <PID>
+
+# hash the dumped executable and look it up in VirusTotal
+sha256sum ./process_dumps/pid.<PID>.*.exe
+
+# Step 8 — check what DLLs the process loaded (look for unsigned or unusual paths)
+python3 vol.py -f memory.raw windows.dlllist.DllList --pid <PID>
+
+# Step 9 — check registry for persistence
+python3 vol.py -f memory.raw windows.registry.printkey.PrintKey \
+  --key "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+
+# Step 10 — check cmd history for commands the attacker ran
+python3 vol.py -f memory.raw windows.cmdscan.CmdScan
+python3 vol.py -f memory.raw windows.console.ConsoleInfo
+```
