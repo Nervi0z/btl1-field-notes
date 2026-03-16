@@ -1,0 +1,6 @@
+mkdocs>=1.5.3
+mkdocs-material>=9.5.0
+mkdocs-glightbox>=0.3.7
+mkdocs-minify-plugin>=0.8.0
+pymdown-extensions>=10.7
+Pygments>=2.17.2

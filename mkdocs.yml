@@ -1,0 +1,153 @@
+site_name: BTL1 Field Notes
+site_description: >-
+  Practical field reference for the Security Blue Team BTL1 certification
+  and SOC Tier 1 operations. Real commands, real workflows, no fluff.
+site_url: https://nervi0z.github.io/btl1-field-notes
+site_author: Nervi0z
+repo_name: Nervi0z/btl1-field-notes
+repo_url: https://github.com/Nervi0z/btl1-field-notes
+edit_uri: edit/main/docs/
+
+copyright: >
+  <a href="https://github.com/Nervi0z">@Nervi0z</a> · Security Analyst · VAR Group Madrid
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+    - header.autohide
+    - announce.dismiss
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    admonition:
+      note: octicons/tag-16
+      tip: octicons/squirrel-16
+      warning: octicons/alert-16
+      danger: octicons/zap-16
+
+extra_css:
+  - assets/custom.css
+
+extra_javascript:
+  - assets/custom.js
+
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.]+'
+  - glightbox
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.critic
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Nervi0z
+      name: Nervi0z on GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/miguel-alameda
+      name: LinkedIn
+  analytics:
+    feedback:
+      title: Was this page useful?
+      ratings:
+        - icon: material/thumb-up-outline
+          name: Yes
+          data: 1
+          note: Thanks for the feedback.
+        - icon: material/thumb-down-outline
+          name: No
+          data: 0
+          note: Thanks. Help improve this page by opening an issue.
+  generator: false
+
+nav:
+  - Home: index.md
+  - Introduction:
+    - 00_Introduction_BTL1/index.md
+    - What is BTL1: 00_Introduction_BTL1/01_What_is_BTL1.md
+    - Exam Strategy: 00_Introduction_BTL1/02_Exam_Strategy.md
+  - Phishing Analysis:
+    - 01_Phishing_Analysis/index.md
+  - Threat Intelligence:
+    - 02_Threat_Intelligence/index.md
+  - Digital Forensics:
+    - 03_Digital_Forensics/index.md
+  - SIEM Analysis:
+    - 04_SIEM_Analysis/index.md
+  - Network Analysis:
+    - 05_Network_Analysis/index.md
+  - Incident Response:
+    - 06_Incident_Response/index.md
