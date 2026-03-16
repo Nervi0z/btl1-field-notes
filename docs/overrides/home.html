@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block styles %}
   {{ super() }}
   <style>
-    /* ── Reset hero area ── */
+    /* â”€â”€ Reset hero area â”€â”€ */
     .md-main { margin-top: 0; }
     .md-content__inner { padding: 0; margin: 0; }
     .md-typeset h1:first-child { display: none; }
 
-    /* ── Terminal grid background ── */
+    /* â”€â”€ Terminal grid background â”€â”€ */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -43,7 +43,7 @@
       pointer-events: none;
     }
 
-    /* ── Scanline animation ── */
+    /* â”€â”€ Scanline animation â”€â”€ */
     .hero-scan {
       position: absolute;
       left: 0; right: 0;
@@ -60,7 +60,7 @@
       100% { top: 100%; opacity: 0; }
     }
 
-    /* ── Hero content ── */
+    /* â”€â”€ Hero content â”€â”€ */
     .hero-inner {
       position: relative;
       z-index: 2;
@@ -134,7 +134,7 @@
     }
     .hero-sub strong { color: #94a3b8; font-weight: 500; }
 
-    /* ── Stats row ── */
+    /* â”€â”€ Stats row â”€â”€ */
     .hero-stats {
       display: flex;
       gap: 2.5rem;
@@ -164,7 +164,7 @@
       color: #334155;
     }
 
-    /* ── CTA buttons ── */
+    /* â”€â”€ CTA buttons â”€â”€ */
     .hero-cta {
       display: flex;
       gap: 1rem;
@@ -210,7 +210,7 @@
       text-decoration: none !important;
     }
 
-    /* ── Domains section ── */
+    /* â”€â”€ Domains section â”€â”€ */
     .domains {
       background: #020810;
       padding: 5rem 4rem;
@@ -259,7 +259,7 @@
       margin-bottom: 3rem;
     }
 
-    /* ── Domain cards ── */
+    /* â”€â”€ Domain cards â”€â”€ */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -336,7 +336,7 @@
     .tool-g { color: #22C55E; border-color: #22C55E44; background: #22C55E0d; }
     .tool-y { color: #EAB308; border-color: #EAB30844; background: #EAB3080d; }
 
-    /* ── Quick ref section ── */
+    /* â”€â”€ Quick ref section â”€â”€ */
     .qref {
       background: #020810;
       padding: 5rem 4rem;
@@ -394,7 +394,7 @@
     .cmd { color: #22C55E; }
     .cmd-comment { color: #334155; font-size: 0.72rem; }
 
-    /* ── About section ── */
+    /* â”€â”€ About section â”€â”€ */
     .about {
       background: #020810;
       padding: 5rem 4rem;
@@ -462,7 +462,7 @@
       font-weight: 500;
     }
 
-    /* ── Footer strip ── */
+    /* â”€â”€ Footer strip â”€â”€ */
     .site-footer {
       background: #020810;
       border-top: 1px solid #0d1f3c;
@@ -494,7 +494,7 @@
 {% block content %}
 <div class="hero-scan"></div>
 
-<!-- ── HERO ── -->
+<!-- â”€â”€ HERO â”€â”€ -->
 <section class="hero">
   <div class="hero-inner">
 
@@ -505,7 +505,7 @@
       <span class="hero-prompt-cursor"></span>
     </div>
 
-    <div class="hero-eyebrow">BTL1 Gold &nbsp;·&nbsp; Security Blue Team</div>
+    <div class="hero-eyebrow">BTL1 Gold &nbsp;Â·&nbsp; Security Blue Team</div>
 
     <h1 class="hero-title">
       <span class="hero-title-accent">BTL1</span><br>
@@ -524,7 +524,7 @@
         <span class="stat-l">Domains</span>
       </div>
       <div class="stat">
-        <span class="stat-n">97★</span>
+        <span class="stat-n">97â˜…</span>
         <span class="stat-l">GitHub Stars</span>
       </div>
       <div class="stat">
@@ -539,17 +539,17 @@
 
     <div class="hero-cta">
       <a href="{{ base_url }}00_Introduction_BTL1/" class="btn-primary">
-        Start here &nbsp;→
+        Start here &nbsp;â†’
       </a>
       <a href="https://github.com/Nervi0z/btl1-field-notes" class="btn-ghost" target="_blank">
-        GitHub &nbsp;↗
+        GitHub &nbsp;â†—
       </a>
     </div>
 
   </div>
 </section>
 
-<!-- ── DOMAINS ── -->
+<!-- â”€â”€ DOMAINS â”€â”€ -->
 <section class="domains">
   <div class="section-label">Coverage</div>
   <div class="section-title">Six exam domains</div>
@@ -626,7 +626,7 @@
   </div>
 </section>
 
-<!-- ── QUICK REF ── -->
+<!-- â”€â”€ QUICK REF â”€â”€ -->
 <section class="qref">
   <div class="section-label">Quick reference</div>
   <div class="section-title">Commands you use every day</div>
@@ -642,19 +642,19 @@
     <div class="terminal-body">
       <div class="cmd-line">
         <span class="cmd">vol.py -f dump.mem windows.pslist.PsList</span>
-        <span class="cmd-comment"># Volatility 3 — list running processes</span>
+        <span class="cmd-comment"># Volatility 3 â€” list running processes</span>
       </div>
       <div class="cmd-line">
         <span class="cmd">vol.py -f dump.mem windows.netscan.NetScan</span>
-        <span class="cmd-comment"># Volatility 3 — network connections</span>
+        <span class="cmd-comment"># Volatility 3 â€” network connections</span>
       </div>
       <div class="cmd-line">
         <span class="cmd">index=windows EventCode=4625 | stats count by src_ip | sort -count</span>
-        <span class="cmd-comment"># Splunk — brute force detection</span>
+        <span class="cmd-comment"># Splunk â€” brute force detection</span>
       </div>
       <div class="cmd-line">
         <span class="cmd">tcp.flags.syn==1 &amp;&amp; tcp.flags.ack==0</span>
-        <span class="cmd-comment"># Wireshark — SYN scan detection</span>
+        <span class="cmd-comment"># Wireshark â€” SYN scan detection</span>
       </div>
       <div class="cmd-line">
         <span class="cmd">strings -n 8 artifact.bin | grep -Ei 'http|powershell|cmd'</span>
@@ -668,7 +668,7 @@
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
+<!-- â”€â”€ ABOUT â”€â”€ -->
 <section class="about">
   <div class="section-label">Background</div>
   <div class="section-title">Why this exists</div>
@@ -681,7 +681,7 @@
         detection and response at VAR Group, Madrid.
       </p>
       <p>
-        The goal was never to replace the course material — it was to have a
+        The goal was never to replace the course material â€” it was to have a
         <strong>fast reference</strong> during live investigations. When an alert
         fires at 2am, you need the Volatility plugin name, not a paragraph
         explaining what memory forensics is.
@@ -699,15 +699,15 @@
       </div>
       <div class="meta-item">
         <span class="meta-label">Role</span>
-        <span class="meta-value">Security Analyst · VAR Group Madrid</span>
+        <span class="meta-value">Security Analyst Â· VAR Group Madrid</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Certification</span>
-        <span class="meta-value">BTL1 Gold · SAL1</span>
+        <span class="meta-value">BTL1 Gold Â· SAL1</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Focus</span>
-        <span class="meta-value">Vulnerability Management · Detection · SOC</span>
+        <span class="meta-value">Vulnerability Management Â· Detection Â· SOC</span>
       </div>
       <div class="meta-item" style="border-left-color: #06B6D4;">
         <span class="meta-label">License</span>
@@ -717,7 +717,7 @@
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- â”€â”€ FOOTER â”€â”€ -->
 <footer class="site-footer">
   <div class="footer-brand">
     <a href="https://github.com/Nervi0z">@Nervi0z</a>
@@ -729,3 +729,4 @@
 {% endblock %}
 
 {% block footer %}{% endblock %}
+
