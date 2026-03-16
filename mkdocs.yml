@@ -137,8 +137,6 @@ nav:
   - Home: index.md
   - Introduction:
     - 00_Introduction_BTL1/index.md
-    - What is BTL1: 00_Introduction_BTL1/01_What_is_BTL1.md
-    - Exam Strategy: 00_Introduction_BTL1/02_Exam_Strategy.md
   - Phishing Analysis:
     - 01_Phishing_Analysis/index.md
   - Threat Intelligence:
