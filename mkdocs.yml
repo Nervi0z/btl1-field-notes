@@ -4,8 +4,6 @@ site_description: >-
   and SOC Tier 1 operations. Real commands, real workflows, no fluff.
 site_url: https://nervi0z.github.io/btl1-field-notes/
 site_author: Nervi0z
-docs_dir: docs
-site_dir: site
 repo_name: Nervi0z/btl1-field-notes
 repo_url: https://github.com/Nervi0z/btl1-field-notes
 edit_uri: edit/main/docs/
@@ -43,6 +41,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
     - navigation.top
     - navigation.footer
     - navigation.indexes
@@ -111,10 +110,66 @@ extra:
 
 nav:
   - Home: index.md
-  - Introduction: 00_Introduction_BTL1/index.md
-  - Phishing Analysis: 01_Phishing_Analysis/index.md
-  - Threat Intelligence: 02_Threat_Intelligence/index.md
-  - Digital Forensics: 03_Digital_Forensics/index.md
-  - SIEM Analysis: 04_SIEM_Analysis/index.md
-  - Network Analysis: 05_Network_Analysis/index.md
-  - Incident Response: 06_Incident_Response/index.md
+
+  - Introduction:
+    - 00_Introduction_BTL1/index.md
+    - What is BTL1: 00_Introduction_BTL1/01_What_is_BTL1.md
+    - Exam Philosophy: 00_Introduction_BTL1/02_Exam_Philosophy.md
+    - General Strategy: 00_Introduction_BTL1/03_General_Strategy.md
+    - My BTL1 Experience: 00_Introduction_BTL1/04_My_BTL1_Experience.md
+
+  - Phishing Analysis:
+    - 01_Phishing_Analysis/index.md
+    - Key Concepts: 01_Phishing_Analysis/01_Key_Concepts.md
+    - Tools: 01_Phishing_Analysis/02_Tools.md
+    - Commands Cheatsheet: 01_Phishing_Analysis/03_Commands_Cheatsheet.md
+    - Analysis Workflow: 01_Phishing_Analysis/04_Analysis_Workflow.md
+    - Practice Resources: 01_Phishing_Analysis/05_Practice_Resources.md
+
+  - Threat Intelligence:
+    - 02_Threat_Intelligence/index.md
+    - Key Concepts: 02_Threat_Intelligence/01_Key_Concepts.md
+    - MITRE ATT&CK: 02_Threat_Intelligence/02_MITRE_ATTACK.md
+    - Tools: 02_Threat_Intelligence/03_Tools.md
+    - IOC Workflow: 02_Threat_Intelligence/04_IoC_Workflow.md
+    - Practice Resources: 02_Threat_Intelligence/05_Practice_Resources.md
+
+  - Digital Forensics:
+    - 03_Digital_Forensics/index.md
+    - Acquisition: 03_Digital_Forensics/01_Acquisition.md
+    - Disk Analysis:
+      - Overview: 03_Digital_Forensics/02_Disk_Analysis/README.md
+      - Disk Tools: 03_Digital_Forensics/02_Disk_Analysis/Disk_Tools.md
+      - File Carving: 03_Digital_Forensics/02_Disk_Analysis/File_Carving_Scalpel.md
+      - Linux Artifacts: 03_Digital_Forensics/02_Disk_Analysis/Linux_Artifacts.md
+      - Metadata ExifTool: 03_Digital_Forensics/02_Disk_Analysis/Metadata_ExifTool.md
+      - Windows Artifacts: 03_Digital_Forensics/02_Disk_Analysis/Windows_Artifacts.md
+    - Memory Analysis:
+      - Overview: 03_Digital_Forensics/03_Memory_Analysis/README.md
+      - Key Concepts: 03_Digital_Forensics/03_Memory_Analysis/Key_Concepts.md
+      - Volatility: 03_Digital_Forensics/03_Memory_Analysis/Volatility_Tool.md
+    - Practice Resources: 03_Digital_Forensics/04_Practice_Resources.md
+
+  - SIEM Analysis:
+    - 04_SIEM_Analysis/index.md
+    - Key Concepts: 04_SIEM_Analysis/01_Key_Concepts.md
+    - Splunk Cheatsheet: 04_SIEM_Analysis/02_Splunk_Cheatsheet.md
+    - Common Searches: 04_SIEM_Analysis/03_Common_Searches.md
+    - Practice Resources: 04_SIEM_Analysis/04_Practice_Resources.md
+
+  - Network Analysis:
+    - 05_Network_Analysis/index.md
+    - Key Concepts: 05_Network_Analysis/01_Key_Concepts.md
+    - Wireshark & Tshark: 05_Network_Analysis/02_Wireshark_Tshark.md
+    - Filters Cheatsheet: 05_Network_Analysis/03_Filters_Cheatsheet.md
+    - Protocol Analysis: 05_Network_Analysis/04_Specific_Protocol_Analysis.md
+    - Malicious Patterns: 05_Network_Analysis/05_Malicious_Patterns.md
+    - Practice Resources: 05_Network_Analysis/06_Practice_Resources.md
+
+  - Incident Response:
+    - 06_Incident_Response/index.md
+    - IR Lifecycle: 06_Incident_Response/01_IR_Lifecycle.md
+    - Live Response Windows: 06_Incident_Response/02_Live_Response_Windows.md
+    - Live Response Linux: 06_Incident_Response/03_Live_Response_Linux.md
+    - Containment & Eradication: 06_Incident_Response/04_Containment_Eradication.md
+    - Practice Resources: 06_Incident_Response/05_Practice_Resources.md
